@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introducción al análisis de datos con R </title>
+    <meta charset="utf-8" />
+    <meta name="author" content="  Manuel Mejías Leiva " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# <span style="font-size: 100%;">Introducción al análisis de datos con R<br></span>
+]
+.subtitle[
+## <span style="font-size: 80%;">Introducción a la limpieza y manipulación de datos<br></span>
+]
+.author[
+### <br><br><span style="font-size: 75%;">Manuel Mejías Leiva<br></span>
+]
+.institute[
+### <span style="font-size: 75%;color:#ffffff !important;text-decoration:none;">Universidad de Valladolid | <a href="mailto:manuel.mejias@uva.es" class="email">manuel.mejias@uva.es</a><br><br></span><br><br>
+]
+.date[
+### <span style="font-size: 75%;">5 - 9 junio de 2023<br></span>
+]
+
+---
+
+
+
+
+
+
+
+class: inverse, center, middle, heading
+
+# Primeros pasos: cargar librerías, definir directorio de trabajo e importar datos
+
+---
+# Librerías y datos
+
+Cargamos las librerías
+
+```r
+library(tidyverse)
+```
+
+Definimos el directorio de trabajo
+
+```r
+setwd("~/Desktop/Intro-R/Dia2")
+```
+
+Importamos los datos
+
+```r
+ecv19 &lt;- read_csv("ecv19.csv")
+```
+
+```
+## Rows: 39852 Columns: 13
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (7): sexo, nacionalidad, ccaa, tipo_hogar, regimen_vivienda, nivel_educa...
+## dbl (6): edad, unidades_consumo, renta_hogar, ingresos_anuales, riesgo_pobre...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+---
+# ¿Qué aspecto tienen? 🔎
+
+
+```r
+glimpse(ecv19)
+```
+
+```
+## Rows: 39,852
+## Columns: 13
+## $ sexo                         &lt;chr&gt; "Hombre", "Mujer", "Mujer", "Hombre", "Mu…
+## $ edad                         &lt;dbl&gt; 70, 68, 72, 60, 54, 26, 23, 61, 22, 78, 4…
+## $ nacionalidad                 &lt;chr&gt; "Espana", "Espana", "Espana", "Espana", "…
+## $ ccaa                         &lt;chr&gt; "ES21", "ES21", "ES21", "ES21", "ES21", "…
+## $ tipo_hogar                   &lt;chr&gt; "2 adultos sin niños", "2 adultos sin niñ…
+## $ regimen_vivienda             &lt;chr&gt; "En propiedad", "En propiedad", "En propi…
+## $ nivel_educativo              &lt;chr&gt; "300", "300", "200", "300", "500", "500",…
+## $ unidades_consumo             &lt;dbl&gt; 1.5, 1.5, 1.5, 1.5, 2.0, 2.0, 2.0, 1.5, 1…
+## $ renta_hogar                  &lt;dbl&gt; 31626.70, 31626.70, 42250.00, 42250.00, 7…
+## $ ingresos_anuales             &lt;dbl&gt; 0.00, 0.00, 0.00, 41600.00, 0.00, 4680.00…
+## $ riesgo_pobreza               &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,…
+## $ situacion_economica_infancia &lt;chr&gt; NA, NA, NA, NA, "Moderadamente buena", "M…
+## $ pesos                        &lt;dbl&gt; 906.1583, 906.1583, 1227.6887, 1227.6887,…
+```
+---
+class: inverse, center, middle, heading
+
+# El flujo de trabajo de la ciencia de datos 
+---
+# Procesamiento de datos
+
+-   La gestión de datos suele ser la parte de cualquier proyecto de análisis de datos que requiere más tiempo.
+
+-   El proceso de tratamiento de datos incluye su importación, ordenación y transformación.
+
+-   La gestión de datos es la manipulación o combinación de conjuntos de datos con fines de análisis, y a menudo hay que aclarar y repetir este proceso a medida que cambia la comprensión de los datos y también cambian las necesidades de modelización y visualización.
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="https://www.r4wrds.com/intro/images/data-science-wrangle.png" style="width: 575px; height: 260px;"&gt;
+&lt;/div&gt;
+#### Ilustración: R for Data Science
+---
+class: inverse, center, middle, heading
+
+# Depurando, ordenando y resumiendo datos con {dplyr}
+
+---
+# Empecemos a limpiar datos 🧹
+
+Estas son las cinco funciones clave de **dplyr** que permiten resolver la gran mayoría de los desafíos de manipulación de datos:
+
+-   Filtrar o elegir las observaciones por sus valores (`filter()` --- del inglés filtrar).
+
+-   Seleccionar las variables por sus nombres (`select()` --- del inglés seleccionar).
+
+-   Crear nuevas variables con transformaciones de variables existentes (`mutate()` --- del inglés mutar o transformar).
+
+-   Contraer muchos valores en un solo resumen (`summarise()` --- del inglés resumir).
+
+-   Reordenar las filas (`arrange()` --- del inglés organizar).
+---
+# Antes de empezar, el pipe .orange[%&gt;%]
+
+`%&gt;%` puede leerse como "*y a continuación*", y nos **.bg-purple_light[permite encadenar múltiples operaciones en nuestro código]**.
+
+Así escribimos código más simple, legible y con menos repeticiones.
+.pull-left[
+
+
+```r
+# Filtrar los datos
+ecv_filtrado &lt;- filter(ecv19, 
+                renta_hogar &gt; 100000)
+
+# Contar número de hogares
+conteo_hogares &lt;- count(ecv_filtrado, 
+                        tipo_hogar)
+
+# Resultado final
+conteo_hogares
+```
+
+```
+## # A tibble: 6 × 2
+##   tipo_hogar                    n
+##   &lt;chr&gt;                     &lt;int&gt;
+## 1 2 adultos sin niños          88
+## 2 Biparental con niños/as     254
+## 3 Monomarental con niños/as     7
+## 4 Otros hogares               260
+## 5 Unipersonal                   5
+## 6 &lt;NA&gt;                          4
+```
+]
+
+.pull-right[
+
+
+```r
+ecv19 %&gt;% 
+  filter(renta_hogar &gt; 100000) %&gt;%
+  count(tipo_hogar)
+```
+
+```
+## # A tibble: 6 × 2
+##   tipo_hogar                    n
+##   &lt;chr&gt;                     &lt;int&gt;
+## 1 2 adultos sin niños          88
+## 2 Biparental con niños/as     254
+## 3 Monomarental con niños/as     7
+## 4 Otros hogares               260
+## 5 Unipersonal                   5
+## 6 &lt;NA&gt;                          4
+```
+]
+---
+# .orange[FILTRAR] registros: filter()
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/cb8d9c50-f48e-4c6d-a5b3-1d30ce0be2ad.png?h=2324beeb35f128adcdb4ab0e0996e706" style="width: 800px; height: 500px;"&gt;
+&lt;/div&gt;
+##### Ilustración: Allison Horst
+
+---
+# .orange[FILTRAR] registros: filter()
+
+Una de las **operaciones más comunes** es **.bg-purple_light[filtrar registros]** en base a alguna **.bg-purple_light[condición lógica]**: con `filter()` se seleccionarán solo individuos que cumplan ciertas condiciones.
+
+
+```r
+ecv19 %&gt;% 
+  filter(sexo == "Mujer")
+```
+
+```
+## # A tibble: 20,484 × 13
+##    sexo   edad nacionalidad ccaa  tipo_hogar    regimen_vivienda nivel_educativo
+##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;            &lt;chr&gt;          
+##  1 Mujer    68 Espana       ES21  2 adultos si… En propiedad     300            
+##  2 Mujer    72 Espana       ES21  2 adultos si… En propiedad     200            
+##  3 Mujer    54 Espana       ES21  Biparental c… En propiedad     500            
+##  4 Mujer    26 Espana       ES21  Biparental c… En propiedad     500            
+##  5 Mujer    23 Espana       ES21  Biparental c… En propiedad     344            
+##  6 Mujer    61 Espana       ES21  Monomarental… En alquiler      500            
+##  7 Mujer    78 Espana       ES21  2 adultos si… En propiedad     100            
+##  8 Mujer    48 Espana       ES21  2 adultos si… En propiedad     500            
+##  9 Mujer    52 Espana       ES21  Biparental c… En propiedad     500            
+## 10 Mujer    14 &lt;NA&gt;         ES21  Biparental c… En propiedad     &lt;NA&gt;           
+## # ℹ 20,474 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+# .orange[FILTRAR] registros: filter()
+
+Comparadores habituales:
+
+* `==, !=` igual/distinto que
+* `&gt;, &lt;` mayor/menor que
+* `&gt;=, &lt;=` mayor/menor o igual que
+* `%in%` los valores pertenecen a un listado
+* `!is.na()` los valores no son ausentes (mejor usar `drop_na()`)
+* `between(variable, val1, val2)`: si los valores (normalmente continuos) están dentro de un rango.
+
+
+```r
+ecv19 %&gt;%
+  filter(renta_hogar &gt; 10000)
+```
+
+```
+## # A tibble: 36,470 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    70 Espana         ES21  2 adultos… En propiedad     300            
+##  2 Mujer     68 Espana         ES21  2 adultos… En propiedad     300            
+##  3 Mujer     72 Espana         ES21  2 adultos… En propiedad     200            
+##  4 Hombre    60 Espana         ES21  2 adultos… En propiedad     300            
+##  5 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  6 Hombre    22 Extranjero (r… ES21  Monomaren… En alquiler      344            
+##  7 Mujer     78 Espana         ES21  2 adultos… En propiedad     100            
+##  8 Mujer     48 Espana         ES21  2 adultos… En propiedad     500            
+##  9 Hombre    50 Espana         ES21  Biparenta… En propiedad     300            
+## 10 Mujer     52 Espana         ES21  Biparenta… En propiedad     500            
+## # ℹ 36,460 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+# .orange[FILTRAR] registros: filter()
+
+En el caso de utilizar `%in%` dentro de `filter()`, se busca que los valores de una columna estén presentes en un conjunto de valores especificados.
+
+
+```r
+ecv19 %&gt;%
+  filter(edad %in% c(25:45)) 
+```
+
+```
+## # A tibble: 9,464 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Mujer     26 Espana         ES21  Biparenta… En propiedad     500            
+##  2 Hombre    36 Extranjero (r… ES22  Biparenta… En propiedad     500            
+##  3 Mujer     30 Espana         ES22  Biparenta… En propiedad     500            
+##  4 Mujer     37 Espana         ES21  Uniperson… En propiedad     500            
+##  5 Mujer     40 Espana         ES21  2 adultos… En propiedad     300            
+##  6 Hombre    39 Espana         ES21  2 adultos… En propiedad     300            
+##  7 Hombre    43 Espana         ES21  2 adultos… En propiedad     500            
+##  8 Hombre    40 Espana         ES21  Uniperson… En propiedad     500            
+##  9 Mujer     41 Espana         ES21  Biparenta… En propiedad     200            
+## 10 Hombre    42 Espana         ES21  Biparenta… En propiedad     000            
+## # ℹ 9,454 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+# .orange[FILTRAR] registros: filter()
+
+El operador **!** se coloca delante de una condición lógica para negarla. Esto significa que se seleccionarán las filas que no cumplan con la condición negada.
+
+
+```r
+ecv19 %&gt;%
+  filter(regimen_vivienda != "En propiedad")
+```
+
+```
+## # A tibble: 8,644 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  2 Hombre    22 Extranjero (r… ES21  Monomaren… En alquiler      344            
+##  3 Mujer     43 Espana         ES21  Monomaren… En alquiler      500            
+##  4 Mujer     11 &lt;NA&gt;           ES21  Monomaren… En alquiler      &lt;NA&gt;           
+##  5 Hombre    56 Extranjero (r… ES21  Otros hog… En alquiler      500            
+##  6 Mujer     51 Extranjero (r… ES21  Otros hog… En alquiler      300            
+##  7 Hombre    30 Extranjero (r… ES21  Otros hog… En alquiler      344            
+##  8 Hombre    66 Espana         ES21  Uniperson… En alquiler      100            
+##  9 Hombre    38 Espana         ES42  Uniperson… En alquiler      500            
+## 10 Hombre    45 Extranjero (r… ES42  2 adultos… En alquiler      100            
+## # ℹ 8,634 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[FILTRAR] registros: filter()
+
+Cuando es una variable continua el interés podría estar en comprobar si la variable toma valores **.bg-purple_light[dentro de un intervalo continuo]**.
+
+
+```r
+ecv19 %&gt;%
+  filter(between(edad, 25, 35))
+```
+
+```
+## # A tibble: 3,897 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Mujer     26 Espana         ES21  Biparenta… En propiedad     500            
+##  2 Mujer     30 Espana         ES22  Biparenta… En propiedad     500            
+##  3 Hombre    35 Espana         ES21  Biparenta… En propiedad     200            
+##  4 Mujer     33 Espana         ES21  Biparenta… En propiedad     500            
+##  5 Mujer     26 Espana         ES21  Otros hog… En propiedad     500            
+##  6 Mujer     30 Espana         ES21  Otros hog… En propiedad     354            
+##  7 Hombre    35 Espana         ES21  2 adultos… En propiedad     344            
+##  8 Hombre    30 Extranjero (r… ES21  Otros hog… En alquiler      344            
+##  9 Mujer     31 Espana         ES42  Otros hog… En propiedad     500            
+## 10 Mujer     31 Espana         ES42  Otros hog… En propiedad     344            
+## # ℹ 3,887 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[FILTRAR] registros: filter()
+
+Operadores lógicos: `&amp;` y `|` (o)
+
+
+```r
+ecv19 %&gt;%
+  filter(edad &gt; 30 | edad &lt; 50)
+```
+
+```
+## # A tibble: 39,852 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    70 Espana         ES21  2 adultos… En propiedad     300            
+##  2 Mujer     68 Espana         ES21  2 adultos… En propiedad     300            
+##  3 Mujer     72 Espana         ES21  2 adultos… En propiedad     200            
+##  4 Hombre    60 Espana         ES21  2 adultos… En propiedad     300            
+##  5 Mujer     54 Espana         ES21  Biparenta… En propiedad     500            
+##  6 Mujer     26 Espana         ES21  Biparenta… En propiedad     500            
+##  7 Mujer     23 Espana         ES21  Biparenta… En propiedad     344            
+##  8 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  9 Hombre    22 Extranjero (r… ES21  Monomaren… En alquiler      344            
+## 10 Mujer     78 Espana         ES21  2 adultos… En propiedad     100            
+## # ℹ 39,842 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+# .orange[FILTRAR] registros: filter()
+
+Además, podemos crear un nuevo data frame a partir de las condiciones que le facilitemos a `filter()`. Por ejemplo:
+
+
+```r
+filtered1 &lt;- ecv19 %&gt;% 
+  filter((sexo == "Hombre" &amp; edad %in% c(30:50)) |
+         (sexo == "Mujer" &amp; edad %in% c(55:65)))
+filtered1
+```
+
+```
+## # A tibble: 8,710 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  2 Hombre    50 Espana         ES21  Biparenta… En propiedad     300            
+##  3 Hombre    50 Espana         ES21  Otros hog… En propiedad     500            
+##  4 Hombre    36 Extranjero (r… ES22  Biparenta… En propiedad     500            
+##  5 Hombre    48 Espana         ES21  Biparenta… En propiedad     200            
+##  6 Hombre    39 Espana         ES21  2 adultos… En propiedad     300            
+##  7 Hombre    43 Espana         ES21  2 adultos… En propiedad     500            
+##  8 Hombre    40 Espana         ES21  Uniperson… En propiedad     500            
+##  9 Hombre    42 Espana         ES21  Biparenta… En propiedad     000            
+## 10 Hombre    35 Espana         ES21  Biparenta… En propiedad     200            
+## # ℹ 8,700 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[FILTRAR] datos ausentes
+
+Podemos también **.bg-purple_light[filtrar los registros ausentes]** en alguna de sus variables con `drop_na()`. Si no especificamos, elimina todos los registros que tenga alguno de sus campos ausente.
+
+
+```r
+ecv19 %&gt;% drop_na()
+```
+
+Podemos indicarle que nos elimine filas con datos ausentes fijándonos solo en **.bg-purple_light[alguna variable particular]**.
+
+
+```r
+ecv19 %&gt;% drop_na(sexo, edad, ingresos_anuales)
+```
+
+```
+## # A tibble: 33,376 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    70 Espana         ES21  2 adultos… En propiedad     300            
+##  2 Mujer     68 Espana         ES21  2 adultos… En propiedad     300            
+##  3 Mujer     72 Espana         ES21  2 adultos… En propiedad     200            
+##  4 Hombre    60 Espana         ES21  2 adultos… En propiedad     300            
+##  5 Mujer     54 Espana         ES21  Biparenta… En propiedad     500            
+##  6 Mujer     26 Espana         ES21  Biparenta… En propiedad     500            
+##  7 Mujer     23 Espana         ES21  Biparenta… En propiedad     344            
+##  8 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  9 Hombre    22 Extranjero (r… ES21  Monomaren… En alquiler      344            
+## 10 Mujer     78 Espana         ES21  2 adultos… En propiedad     100            
+## # ℹ 33,366 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+# .orange[FILTRAR] datos ausentes
+
+`!is.na()` también se puede utilizar para filtrar un dataframe excluyendo los valores ausentes (NA) en una columna específica.
+
+
+```r
+ecv19 %&gt;%
+  filter(!is.na(nivel_educativo))
+```
+
+```
+## # A tibble: 33,187 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    70 Espana         ES21  2 adultos… En propiedad     300            
+##  2 Mujer     68 Espana         ES21  2 adultos… En propiedad     300            
+##  3 Mujer     72 Espana         ES21  2 adultos… En propiedad     200            
+##  4 Hombre    60 Espana         ES21  2 adultos… En propiedad     300            
+##  5 Mujer     54 Espana         ES21  Biparenta… En propiedad     500            
+##  6 Mujer     26 Espana         ES21  Biparenta… En propiedad     500            
+##  7 Mujer     23 Espana         ES21  Biparenta… En propiedad     344            
+##  8 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  9 Hombre    22 Extranjero (r… ES21  Monomaren… En alquiler      344            
+## 10 Mujer     78 Espana         ES21  2 adultos… En propiedad     100            
+## # ℹ 33,177 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[FILTRAR] registros:  slice()
+
+Normalmente filtraremos registros por alguna condición pero no siempre, a veces nos puede interesar, por ejemplo, sacar las primeras n filas. Pera podemos crear **.bg-purple_light[rebanadas de los datos]**, seleccionando filas por su posición con `slice()`.
+
+
+```r
+ecv19 %&gt;% slice(1) 
+```
+
+```
+## # A tibble: 1 × 13
+##   sexo    edad nacionalidad ccaa  tipo_hogar    regimen_vivienda nivel_educativo
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;            &lt;chr&gt;          
+## 1 Hombre    70 Espana       ES21  2 adultos si… En propiedad     300            
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[FILTRAR] registros:  slice()
+
+Recuerda que también podemos **.bg-purple_light[extraer varias rebanadas]** a la vez.
+
+
+```r
+# filas de la 1 a la 5
+ecv19 %&gt;% slice(1:5)
+```
+
+```
+## # A tibble: 5 × 13
+##   sexo    edad nacionalidad ccaa  tipo_hogar    regimen_vivienda nivel_educativo
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;            &lt;chr&gt;          
+## 1 Hombre    70 Espana       ES21  2 adultos si… En propiedad     300            
+## 2 Mujer     68 Espana       ES21  2 adultos si… En propiedad     300            
+## 3 Mujer     72 Espana       ES21  2 adultos si… En propiedad     200            
+## 4 Hombre    60 Espana       ES21  2 adultos si… En propiedad     300            
+## 5 Mujer     54 Espana       ES21  Biparental c… En propiedad     500            
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[FILTRAR] registros:  slice()
+
+También podríamos usar una **.bg-purple_light[secuencia de índices]** a extraer.
+
+
+```r
+# filas 1, 2, 10, 13, 27
+ecv19 %&gt;% slice(c(1, 2, 10, 13, 27))
+```
+
+```
+## # A tibble: 5 × 13
+##   sexo    edad nacionalidad ccaa  tipo_hogar    regimen_vivienda nivel_educativo
+##   &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;            &lt;chr&gt;          
+## 1 Hombre    70 Espana       ES21  2 adultos si… En propiedad     300            
+## 2 Mujer     68 Espana       ES21  2 adultos si… En propiedad     300            
+## 3 Mujer     78 Espana       ES21  2 adultos si… En propiedad     100            
+## 4 Mujer     52 Espana       ES21  Biparental c… En propiedad     500            
+## 5 Hombre    39 Espana       ES21  2 adultos si… En propiedad     300            
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+
+# .orange[SELECCIONAR] columnas:  select()
+
+Utilizamos `select()` para guardar sólo aquellas variables que nos interesan.
+
+Podemos seleccionar por nombre de columna:
+
+
+```r
+ecv19 %&gt;%
+  select(sexo, renta_hogar)
+```
+
+```
+## # A tibble: 39,852 × 2
+##    sexo   renta_hogar
+##    &lt;chr&gt;        &lt;dbl&gt;
+##  1 Hombre      31627.
+##  2 Mujer       31627.
+##  3 Mujer       42250 
+##  4 Hombre      42250 
+##  5 Mujer        7043 
+##  6 Mujer        7043 
+##  7 Mujer        7043 
+##  8 Mujer       12303.
+##  9 Hombre      12303.
+## 10 Mujer       43889.
+## # ℹ 39,842 more rows
+```
+---
+# .orange[SELECCIONAR] columnas:  select()
+
+
+Como sucedía al filtrar, la función `select()` es bastante versatil y nos permite:
+
+* Seleccionar **.bg-purple_light[varias variables a la vez]** (concatenando sus nombres).
+
+
+```r
+ecv19 %&gt;% 
+  select(sexo:tipo_hogar)
+```
+
+```
+## # A tibble: 39,852 × 5
+##    sexo    edad nacionalidad             ccaa  tipo_hogar               
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                    &lt;chr&gt; &lt;chr&gt;                    
+##  1 Hombre    70 Espana                   ES21  2 adultos sin niños      
+##  2 Mujer     68 Espana                   ES21  2 adultos sin niños      
+##  3 Mujer     72 Espana                   ES21  2 adultos sin niños      
+##  4 Hombre    60 Espana                   ES21  2 adultos sin niños      
+##  5 Mujer     54 Espana                   ES21  Biparental con niños/as  
+##  6 Mujer     26 Espana                   ES21  Biparental con niños/as  
+##  7 Mujer     23 Espana                   ES21  Biparental con niños/as  
+##  8 Mujer     61 Espana                   ES21  Monomarental con niños/as
+##  9 Hombre    22 Extranjero (resto mundo) ES21  Monomarental con niños/as
+## 10 Mujer     78 Espana                   ES21  2 adultos sin niños      
+## # ℹ 39,842 more rows
+```
+
+---
+# .orange[SELECCIONAR] columnas:  select()
+
+Por posición:
+
+
+```r
+ecv19 %&gt;%
+  select(1:3)
+```
+
+```
+## # A tibble: 39,852 × 3
+##    sexo    edad nacionalidad            
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                   
+##  1 Hombre    70 Espana                  
+##  2 Mujer     68 Espana                  
+##  3 Mujer     72 Espana                  
+##  4 Hombre    60 Espana                  
+##  5 Mujer     54 Espana                  
+##  6 Mujer     26 Espana                  
+##  7 Mujer     23 Espana                  
+##  8 Mujer     61 Espana                  
+##  9 Hombre    22 Extranjero (resto mundo)
+## 10 Mujer     78 Espana                  
+## # ℹ 39,842 more rows
+```
+
+---
+# .orange[SELECCIONAR] columnas:  select()
+
+Todas las columnas menos una:
+
+
+```r
+ecv19 %&gt;%
+  select(-ccaa)
+```
+
+```
+## # A tibble: 39,852 × 12
+##    sexo    edad nacionalidad         tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    70 Espana               2 adultos… En propiedad     300            
+##  2 Mujer     68 Espana               2 adultos… En propiedad     300            
+##  3 Mujer     72 Espana               2 adultos… En propiedad     200            
+##  4 Hombre    60 Espana               2 adultos… En propiedad     300            
+##  5 Mujer     54 Espana               Biparenta… En propiedad     500            
+##  6 Mujer     26 Espana               Biparenta… En propiedad     500            
+##  7 Mujer     23 Espana               Biparenta… En propiedad     344            
+##  8 Mujer     61 Espana               Monomaren… En alquiler      500            
+##  9 Hombre    22 Extranjero (resto m… Monomaren… En alquiler      344            
+## 10 Mujer     78 Espana               2 adultos… En propiedad     100            
+## # ℹ 39,842 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+
+---
+# .orange[SELECCIONAR] columnas:  select()
+
+E incluso quitar varias:
+
+
+```r
+ecv19 %&gt;%
+  select(-c(4:8))
+```
+
+```
+## # A tibble: 39,852 × 8
+##    sexo    edad nacionalidad         renta_hogar ingresos_anuales riesgo_pobreza
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                      &lt;dbl&gt;            &lt;dbl&gt;          &lt;dbl&gt;
+##  1 Hombre    70 Espana                    31627.                0              0
+##  2 Mujer     68 Espana                    31627.                0              0
+##  3 Mujer     72 Espana                    42250                 0              0
+##  4 Hombre    60 Espana                    42250             41600              0
+##  5 Mujer     54 Espana                     7043                 0              1
+##  6 Mujer     26 Espana                     7043              4680              1
+##  7 Mujer     23 Espana                     7043              2340              1
+##  8 Mujer     61 Espana                    12303.                0              1
+##  9 Hombre    22 Extranjero (resto m…      12303.             4680              1
+## 10 Mujer     78 Espana                    43889.                0              0
+## # ℹ 39,842 more rows
+## # ℹ 2 more variables: situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[SELECCIONAR] columnas:  select()
+
+* Seleccionar columnas que **.bg-purple_light[contengan]** un texto (`contains()`)
+
+
+```r
+tb &lt;- tibble("edad" = c(30, 35, 40),
+             "color_ojos" = c("azul", "amarillo", "negro"),
+             "pelo_color" = c("negro", "marrón", "rubio"))
+
+tb %&gt;% 
+  select(contains("color"))
+```
+
+```
+## # A tibble: 3 × 2
+##   color_ojos pelo_color
+##   &lt;chr&gt;      &lt;chr&gt;     
+## 1 azul       negro     
+## 2 amarillo   marrón    
+## 3 negro      rubio
+```
+
+---
+# .orange[RECOLOCAR] columnas: relocate()
+
+Para facilitar la **.bg-purple_light[recolocación]** tenemos una función para ello, `relocate()`,  indicándole en `.after` o `.before` detrás o delante de qué columnas queremos moverlas.
+
+
+```r
+ecv19 %&gt;% 
+  relocate(nivel_educativo, .before = ccaa)
+```
+
+```
+## # A tibble: 39,852 × 13
+##    sexo    edad nacionalidad   nivel_educativo ccaa  tipo_hogar regimen_vivienda
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;           
+##  1 Hombre    70 Espana         300             ES21  2 adultos… En propiedad    
+##  2 Mujer     68 Espana         300             ES21  2 adultos… En propiedad    
+##  3 Mujer     72 Espana         200             ES21  2 adultos… En propiedad    
+##  4 Hombre    60 Espana         300             ES21  2 adultos… En propiedad    
+##  5 Mujer     54 Espana         500             ES21  Biparenta… En propiedad    
+##  6 Mujer     26 Espana         500             ES21  Biparenta… En propiedad    
+##  7 Mujer     23 Espana         344             ES21  Biparenta… En propiedad    
+##  8 Mujer     61 Espana         500             ES21  Monomaren… En alquiler     
+##  9 Hombre    22 Extranjero (r… 344             ES21  Monomaren… En alquiler     
+## 10 Mujer     78 Espana         100             ES21  2 adultos… En propiedad    
+## # ℹ 39,842 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[RENOMBRAR] columnas: rename()
+
+A veces también podemos querer **modificar la «metainformación»** de los datos, **.bg-purple_light[renombrando columnas]**. Para ello usaremos la función `rename()` poniendo primero el nombre nuevo y luego el antiguo.
+
+
+```r
+ecv19 %&gt;% 
+  rename(genero = sexo, 
+         estructura_familiar = tipo_hogar)
+```
+
+```
+## # A tibble: 39,852 × 13
+##    genero  edad nacionalidad          ccaa  estructura_familiar regimen_vivienda
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                 &lt;chr&gt; &lt;chr&gt;               &lt;chr&gt;           
+##  1 Hombre    70 Espana                ES21  2 adultos sin niños En propiedad    
+##  2 Mujer     68 Espana                ES21  2 adultos sin niños En propiedad    
+##  3 Mujer     72 Espana                ES21  2 adultos sin niños En propiedad    
+##  4 Hombre    60 Espana                ES21  2 adultos sin niños En propiedad    
+##  5 Mujer     54 Espana                ES21  Biparental con niñ… En propiedad    
+##  6 Mujer     26 Espana                ES21  Biparental con niñ… En propiedad    
+##  7 Mujer     23 Espana                ES21  Biparental con niñ… En propiedad    
+##  8 Mujer     61 Espana                ES21  Monomarental con n… En alquiler     
+##  9 Hombre    22 Extranjero (resto mu… ES21  Monomarental con n… En alquiler     
+## 10 Mujer     78 Espana                ES21  2 adultos sin niños En propiedad    
+## # ℹ 39,842 more rows
+## # ℹ 7 more variables: nivel_educativo &lt;chr&gt;, unidades_consumo &lt;dbl&gt;,
+## #   renta_hogar &lt;dbl&gt;, ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+# .orange[MODIFICAR] columnas: mutate()
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="https://cdn.myportfolio.com/45214904-6a61-4e23-98d6-b140f8654a40/bd4ae264-ae51-4d18-bd60-7a058ab42fba_rw_1920.png?h=a3757d1f46f418c59e7e7946d026344e" style="width: 800px; height: 500px;"&gt;
+&lt;/div&gt;
+##### Ilustración: Allison Horst
+
+---
+# .orange[MODIFICAR] columnas: mutate()
+
+En muchas ocasiones querremos **.bg-purple_light[modificar o crear  variables]**. Para ello tenemos la función `mutate()`. Vamos a crear una **nueva variable** `renta_equivalente` con la variable de renta divida entre las unidades de consumo de cada hogar (escala OCDE).
+
+
+```r
+ecv19 %&gt;%
+  mutate(renta_equivalente = renta_hogar/unidades_consumo)
+```
+
+```
+## # A tibble: 39,852 × 14
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    70 Espana         ES21  2 adultos… En propiedad     300            
+##  2 Mujer     68 Espana         ES21  2 adultos… En propiedad     300            
+##  3 Mujer     72 Espana         ES21  2 adultos… En propiedad     200            
+##  4 Hombre    60 Espana         ES21  2 adultos… En propiedad     300            
+##  5 Mujer     54 Espana         ES21  Biparenta… En propiedad     500            
+##  6 Mujer     26 Espana         ES21  Biparenta… En propiedad     500            
+##  7 Mujer     23 Espana         ES21  Biparenta… En propiedad     344            
+##  8 Mujer     61 Espana         ES21  Monomaren… En alquiler      500            
+##  9 Hombre    22 Extranjero (r… ES21  Monomaren… En alquiler      344            
+## 10 Mujer     78 Espana         ES21  2 adultos… En propiedad     100            
+## # ℹ 39,842 more rows
+## # ℹ 7 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;, renta_equivalente &lt;dbl&gt;
+```
+---
+# .orange[MODIFICAR] columnas: transmute()
+
+Otra opción es **.bg-purple_light[quedarnos solo con las modificadas]** (por ejemplo, para ver si hace lo que debe) con `transmute()`
+
+
+```r
+ecv19 %&gt;%
+  transmute(renta_equivalente = renta_hogar/unidades_consumo)
+```
+
+```
+## # A tibble: 39,852 × 1
+##    renta_equivalente
+##                &lt;dbl&gt;
+##  1            21084.
+##  2            21084.
+##  3            28167.
+##  4            28167.
+##  5             3522.
+##  6             3522.
+##  7             3522.
+##  8             8202.
+##  9             8202.
+## 10            29259.
+## # ℹ 39,842 more rows
+```
+
+---
+# .orange[MODIFICAR] columnas: mutate()
+
+También podemos combinarlo con la función `if_else()`, que nos puede ayudar a **.bg-purple_light[recategorizaciones sencillas]**.
+
+-   `if_else` (condición, verdadero, falso) nos devuelve una columna con dos valores (V/F) en función de una condición:
+
+
+```r
+ecv19 %&gt;%
+  select(edad, renta_hogar, unidades_consumo) %&gt;%
+  mutate(renta_equiv = (renta_hogar/unidades_consumo),
+         categoria_ingresos = if_else(renta_equiv &lt;= 11500, "Bajos", "Resto"))
+```
+
+```
+## # A tibble: 39,852 × 5
+##     edad renta_hogar unidades_consumo renta_equiv categoria_ingresos
+##    &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;             
+##  1    70      31627.              1.5      21084. Resto             
+##  2    68      31627.              1.5      21084. Resto             
+##  3    72      42250               1.5      28167. Resto             
+##  4    60      42250               1.5      28167. Resto             
+##  5    54       7043               2         3522. Bajos             
+##  6    26       7043               2         3522. Bajos             
+##  7    23       7043               2         3522. Bajos             
+##  8    61      12303.              1.5       8202. Bajos             
+##  9    22      12303.              1.5       8202. Bajos             
+## 10    78      43889.              1.5      29259. Resto             
+## # ℹ 39,842 more rows
+```
+---
+# .orange[MODIFICAR] columnas: mutate() + case_when()
+
+Para **.bg-purple_light[recategorizaciones más complejas]** tenemos a nuestra disposición `case_when()`. Supongamos por ejemplo que queremos crear una **categoría en función de la edad**.
+
+* Si `edad &lt;= 35` –&gt; serán `"35 años o menos"`.
+* Si `edad %in% c(36:64)` –&gt; serán `"36-64 años"`
+* Si no se cumple lo anterior (`TRUE`) –&gt; serán `"65 o más años"`
+
+
+```r
+ecv19 %&gt;%
+  select(edad) %&gt;%
+  mutate(edad_categoria = case_when(edad &lt;= 35 ~ "35 o menos años",
+                               edad %in% c(36:64) ~ "36-64 años",
+                               TRUE ~ "65 o más años"))
+```
+
+```
+## # A tibble: 39,852 × 2
+##     edad edad_categoria 
+##    &lt;dbl&gt; &lt;chr&gt;          
+##  1    70 65 o más años  
+##  2    68 65 o más años  
+##  3    72 65 o más años  
+##  4    60 36-64 años     
+##  5    54 36-64 años     
+##  6    26 35 o menos años
+##  7    23 35 o menos años
+##  8    61 36-64 años     
+##  9    22 35 o menos años
+## 10    78 65 o más años  
+## # ℹ 39,842 more rows
+```
+---
+# .orange[MODIFICAR] columnas: mutate() + case_when()
+.center[
+&lt;img src="case_when.png" style="width: 650px; height: 450px;"&gt;
+]
+
+##### Ilustración: Allison Horst
+---
+# .orange[MODIFICAR] columnas: mutate() + case_when()
+
+Las condiciones de `case_when()` pueden combinar varias variables, cómo por ejemplo:
+
+* Si tiene menos de 30 años e ingresa menos de 6000 euros --&gt; `"Joven precario"`
+* Si tiene entre 40 y 55 años e ingresa más de 40000 euros --&gt; `"Adulto acomodado"`
+* En caso contrario --&gt; `"Otros"`
+
+
+```r
+ecv19 %&gt;%
+  select(edad,ingresos_anuales) %&gt;%
+  mutate(edad_ingresos =
+           case_when(edad &lt; 30 &amp; ingresos_anuales &lt; 6000 ~ "Joven precario",
+                  edad %in% c(40:55) &amp; ingresos_anuales &gt; 40000 ~ "Adulto acomodado",
+                  TRUE ~ "Otros"))
+```
+
+```
+## # A tibble: 39,852 × 3
+##     edad ingresos_anuales edad_ingresos 
+##    &lt;dbl&gt;            &lt;dbl&gt; &lt;chr&gt;         
+##  1    70                0 Otros         
+##  2    68                0 Otros         
+##  3    72                0 Otros         
+##  4    60            41600 Otros         
+##  5    54                0 Otros         
+##  6    26             4680 Joven precario
+##  7    23             2340 Joven precario
+##  8    61                0 Otros         
+##  9    22             4680 Joven precario
+## 10    78                0 Otros         
+## # ℹ 39,842 more rows
+```
+---
+# .orange[RESUMIR]: group_by() + summarise()
+
+`group_by()` se utiliza para agrupar un conjunto de datos según una o varias variables.
+
+Una vez has agrupado, puedes utilizar `summarise()` si quieres "resumirlas".
+
+RECUERDA hacer `ungroup()` si quieres volver a trabajar con los datos sin agrupar.
+
+
+```r
+ecv19 %&gt;%
+  group_by(sexo) %&gt;%
+  summarise(media_ingresos = mean(ingresos_anuales, na.rm = TRUE))
+```
+
+```
+## # A tibble: 2 × 2
+##   sexo   media_ingresos
+##   &lt;chr&gt;           &lt;dbl&gt;
+## 1 Hombre          9611.
+## 2 Mujer           6273.
+```
+---
+# .orange[RESUMIR]: group_by() + summarise()
+
+Si observamos la base de datos original, podemos observar que tenemos una variable llamada **pesos**. Esta variable es muy común encontrarla en multitud de encuestas y es MUY IMPORTANTE saber usarla cuando realizamos nuestras estimaciones e inferencias.
+
+Si queremos aplicar los pesos poblacionales podemos usar la función `weighted.mean()`:
+
+
+```r
+ecv19 %&gt;%
+  group_by(sexo) %&gt;%
+  summarise(media_ingresos_weighted = weighted.mean(ingresos_anuales, 
+*                                                   w = pesos,
+                                                    na.rm = TRUE))
+```
+
+```
+## # A tibble: 2 × 2
+##   sexo   media_ingresos_weighted
+##   &lt;chr&gt;                    &lt;dbl&gt;
+## 1 Hombre                   9895.
+## 2 Mujer                    6533.
+```
+
+---
+# .orange[REORDENAR] filas: arrange()
+
+`arrange()` ordena las observaciones en función de una o más variables. Pasándole las variables que usaremos para la ordenación (por defecto de menor a mayor), podemos invertirlo usando `desc()`.
+
+
+```r
+ecv19 %&gt;% arrange(sexo, desc(edad))
+```
+
+```
+## # A tibble: 39,852 × 13
+##    sexo    edad nacionalidad   ccaa  tipo_hogar regimen_vivienda nivel_educativo
+##    &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;          
+##  1 Hombre    86 Espana         ES52  Otros hog… En propiedad     000            
+##  2 Hombre    86 Espana         ES52  Otros hog… En propiedad     100            
+##  3 Hombre    86 Espana         ES61  2 adultos… En propiedad     000            
+##  4 Hombre    86 Espana         ES43  2 adultos… En propiedad     200            
+##  5 Hombre    86 Espana         ES43  Uniperson… En propiedad     000            
+##  6 Hombre    86 Espana         ES43  2 adultos… En propiedad     500            
+##  7 Hombre    86 Espana         ES43  2 adultos… En propiedad     200            
+##  8 Hombre    86 Espana         ES43  2 adultos… En propiedad     100            
+##  9 Hombre    86 Extranjero (r… ES53  Uniperson… En propiedad     500            
+## 10 Hombre    86 Extranjero (r… ES53  Uniperson… En alquiler      500            
+## # ℹ 39,842 more rows
+## # ℹ 6 more variables: unidades_consumo &lt;dbl&gt;, renta_hogar &lt;dbl&gt;,
+## #   ingresos_anuales &lt;dbl&gt;, riesgo_pobreza &lt;dbl&gt;,
+## #   situacion_economica_infancia &lt;chr&gt;, pesos &lt;dbl&gt;
+```
+---
+class: inverse, center, middle, heading
+
+# Bonus track: transformando la estructura de los datos con {pivot_longer} y {pivot_wider} 🔧
+---
+# Datos .orange[SUCIOS]: messy data
+
+Por ejemplo, vamos a cargar la tabla `table4a` del paquete `{tidyr}` (que ya lo tenemos cargado del entorno `{tidyverse}`).
+
+
+
+
+```r
+table4a
+```
+
+```
+## # A tibble: 3 × 3
+##   country     `1999` `2000`
+##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Afghanistan    745   2666
+## 2 Brazil       37737  80488
+## 3 China       212258 213766
+```
+
+**.bg-purple_light[¿Qué falla?]**
+
+---
+# Datos .orange[SUCIOS]: messy data
+
+.pull-left[
+
+
+
+
+```r
+table4a
+```
+
+```
+## # A tibble: 3 × 3
+##   country     `1999` `2000`
+##   &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Afghanistan    745   2666
+## 2 Brazil       37737  80488
+## 3 China       212258 213766
+```
+
+**.bg-purple_light[¿Qué falla?]**
+
+]
+
+.pull-right[
+
+
+❎ Cada **.bg-green_light[variable en una columna]**.
+
+❎ Cada **.bg-orange[observación/individuo en una fila]** diferente.
+
+❎ Cada **.bg-green_light[celda con un único valor]**.
+
+]
+
+Aunque la columna `$country` representa una variable, las otras columnas no: **.bg-purple_light[ambas son la misma variable]**, solo que medida en años distintos (que debería ser a su vez otra variable), de forma que **.bg-purple_light[cada fila está representando dos observaciones]** (1999, 2000).
+---
+# Datos .orange[SUCIOS]: messy data
+
+
+.pull-left[
+
+Lo que haremos será incluir una nueva columna llamada (por ejemplo) `year` que nos marque el año y otra llamada `cases` que nos diga el valor de la variable de interés en cada uno de esos años.
+
+]
+
+.pull-right[
+
+&lt;img src="pivot_longer.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+# Datos .orange[SUCIOS]: messy data
+
+Lo que haremos será incluir una nueva columna llamada (por ejemplo) `year` que nos marque el año y otra llamada `cases` que nos diga el valor de la variable de interés en cada uno de esos años.
+
+Con la función `pivot_longer()` pivotaremos la tabla para pasarla a **formato long**:
+
+
+```r
+table4a %&gt;%
+* pivot_longer(cols = c("1999", "2000"), names_to = "year", values_to = "cases")
+```
+
+```
+## # A tibble: 6 × 3
+##   country     year   cases
+##   &lt;chr&gt;       &lt;chr&gt;  &lt;dbl&gt;
+## 1 Afghanistan 1999     745
+## 2 Afghanistan 2000    2666
+## 3 Brazil      1999   37737
+## 4 Brazil      2000   80488
+## 5 China       1999  212258
+## 6 China       2000  213766
+```
+---
+# Datos .orange[SUCIOS]: messy data
+
+
+```r
+table4a %&gt;%
+  pivot_longer(cols = c("1999", "2000"),
+               names_to = "year", 
+               values_to = "cases") 
+```
+
+```
+## # A tibble: 6 × 3
+##   country     year   cases
+##   &lt;chr&gt;       &lt;chr&gt;  &lt;dbl&gt;
+## 1 Afghanistan 1999     745
+## 2 Afghanistan 2000    2666
+## 3 Brazil      1999   37737
+## 4 Brazil      2000   80488
+## 5 China       1999  212258
+## 6 China       2000  213766
+```
+
+* `cols`: el **.bg-purple_light[nombre de las columnas a pivotar]** (con comillas por ser números y no caracteres).
+* `names_to`: el **.bg-purple_light[nombre de la nueva columna]** a la que mandamos los **.bg-purple_light[nombres]** de las columnas.
+* `values_to`: el **.bg-purple_light[nombre de la nueva columna]** a la que vamos a mandar los **.bg-purple_light[datos]**.
+
+---
+# Datos .orange[SUCIOS]: messy data
+
+Veamos un segundo tipo de dato sucio: vamos a cargar la tabla `table2` del paquete `{tidyr}` (que ya lo tenemos cargado del entorno `{tidyverse}`). **.bg-purple_light[¿Qué falla?]**
+
+
+```r
+table2
+```
+
+```
+## # A tibble: 12 × 4
+##    country      year type            count
+##    &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;
+##  1 Afghanistan  1999 cases             745
+##  2 Afghanistan  1999 population   19987071
+##  3 Afghanistan  2000 cases            2666
+##  4 Afghanistan  2000 population   20595360
+##  5 Brazil       1999 cases           37737
+##  6 Brazil       1999 population  172006362
+##  7 Brazil       2000 cases           80488
+##  8 Brazil       2000 population  174504898
+##  9 China        1999 cases          212258
+## 10 China        1999 population 1272915272
+## 11 China        2000 cases          213766
+## 12 China        2000 population 1280428583
+```
+
+---
+# Datos .orange[SUCIOS]: messy data
+
+.pull-left[
+
+
+
+```r
+head(table2)
+```
+
+```
+## # A tibble: 6 × 4
+##   country      year type           count
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;          &lt;dbl&gt;
+## 1 Afghanistan  1999 cases            745
+## 2 Afghanistan  1999 population  19987071
+## 3 Afghanistan  2000 cases           2666
+## 4 Afghanistan  2000 population  20595360
+## 5 Brazil       1999 cases          37737
+## 6 Brazil       1999 population 172006362
+```
+
+]
+
+.pull-right[
+
+
+&lt;img src="pivot_wider.png" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+
+❎ Cada **.bg-orange[observación/individuo en una fila]** diferente.
+
+
+Fíjate en las cuatro primeras filas: los registros con el mismo año deberían ser el mismo, es la misma información, **.bg-purple_light[debería estar en la misma fila]**, pero está dividada en dos. 
+
+---
+# Datos .orange[SUCIOS]: messy data
+
+Lo que haremos será lo opuesto a antes: con `pivot_wider()` «ampliaremos» la **.bg-purple_light[tabla a lo ancho]**, con menos filas pero con más columnas.
+
+
+```r
+table2 %&gt;%
+* pivot_wider(names_from = type, values_from = count)
+```
+
+```
+## # A tibble: 6 × 4
+##   country      year  cases population
+##   &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Afghanistan  1999    745   19987071
+## 2 Afghanistan  2000   2666   20595360
+## 3 Brazil       1999  37737  172006362
+## 4 Brazil       2000  80488  174504898
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583
+```
+
+* `names_from`: el **.bg-purple_light[nombre de la columna original]** de la que vamos a sacar las **.bg-purple_light[nuevas columnas]** que vamos a crear (`cases` y `population`).
+* `values_from`: el **.bg-purple_light[nombre de la columna original]** de la que vamos a sacar los **.bg-purple_light[datos]**.
+
+---
+# Otras funciones útiles de dplyr
+
+-   `distinct()` para seleccionar filas únicas de un marco de datos.
+
+-   `top_n()` para filtrar las n observaciones principales (se puede utilizar en combinación con `arrange()`).
+
+-   `ntile()` clasifica los valores en el número de grupos que proporcione. Útil para crear deciles, percentiles o cuartiles.
+
+-   Todas las funciones: &lt;https://dplyr.tidyverse.org/reference/index.html&gt;\
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
