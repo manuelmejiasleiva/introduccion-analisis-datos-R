@@ -1,7 +1,13 @@
 
 # Introducción al análisis de datos con R
 
-**Instructor:** Manuel Mejías Leiva**Institución:** Universidad de Valladolid**Correo electrónico:** [manuel.mejias@uva.es](mailto\:manuel.mejias@uva.es)**Fechas:** 5 Junio – 9 Junio 2023 (11:00-13:00)
+**Instructor:** Manuel Mejías Leiva
+
+**Institución:** Universidad de Valladolid
+
+**Correo electrónico:** [manuel.mejias@uva.es](mailto\:manuel.mejias@uva.es)
+
+**Fechas:** 5 Junio – 9 Junio 2023 (11:00-13:00)
 
 ---
 
