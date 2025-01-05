@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introducción al análisis de datos con R </title>
+    <meta charset="utf-8" />
+    <meta name="author" content="  Manuel Mejías Leiva " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# <span style="font-size: 100%;">Introducción al análisis de datos con R<br></span>
+]
+.subtitle[
+## <span style="font-size: 80%;">Conceptos básicos de R y RStudio<br></span>
+]
+.author[
+### <br><br><span style="font-size: 75%;">Manuel Mejías Leiva<br></span>
+]
+.institute[
+### <span style="font-size: 75%;color:#ffffff !important;text-decoration:none;">Universidad de Valladolid | <a href="mailto:manuel.mejias@uva.es" class="email">manuel.mejias@uva.es</a><br><br></span><br><br>
+]
+.date[
+### <span style="font-size: 75%;">5 - 9 junio de 2023<br></span>
+]
+
+---
+
+
+
+
+
+
+class: inverse, center, middle, heading
+
+# Empezando con R y RStudio
+
+---
+# ¿Qué es R?
+`R` es un **.bg-purple_light[lenguaje estadístico]**, creado por y para la estadística, con 4 ventajas fundamentales:
+
+* **.bg-purple_light[Software libre]** (como C++, Python, etc). no solo es gratis, sino que permite **.bg-orange[acceder libremente a código ajeno]**.
+
+* **.bg-purple_light[Lenguaje modular]**: al ser software libre, existen **.bg-orange[trozos de código]** hechos por otras personas (**.bg-yellow[paquetes]**) que podemos instalar según necesidades.
+
+* **.bg-purple_light[Gran comunidad de usuarios]**: `R` tiene una comunidad de usuarios gigante para hacer estadística (Python tiene una comunidad más enfocada al Machine Learning), con más de 18 000 paquetes.
+
+* **.bg-purple_light[Lenguaje de alto nivel]**. Los lenguajes de alto nivel, como `R` o `Python`, facilitan la programación al usuario (menor curva de aprendizaje, aunque más lentos en ejecución).
+
+---
+# ¿Por qué utilizar R?
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+* ¡Es gratis! Si eres profesor/a o estudiante, las ventajas son evidentes.
+
+* Funciona en diversas plataformas, como Windows, Unix y MacOS.
+
+* Proporciona una plataforma inigualable para programar nuevos métodos estadísticos de forma fácil y directa.
+
+* Contiene rutinas estadísticas avanzadas que aún no están disponibles en otros paquetes.
+
+* Dispone de capacidades gráficas de última generación.
+
+---
+# Cosas que se pueden hacer con R
+
+* Análisis de redes 
+.center[
+&lt;img src="net_ggplot.jpeg" style="width: 425px; height: 520px;"&gt;
+]
+---
+# Cosas que se pueden hacer con R
+
+* Análisis de texto 
+.center[
+&lt;img src="text_mining.png" style="width: 550px; height: 450px;"&gt;
+]
+#### Imagen: Jan Kirenz
+---
+# Cosas que se pueden hacer con R
+
+* Web scraping
+
+.center[&lt;img src="promedio.png" style="width: 600px; height: 500px;"&gt;]
+
+---
+# Cosas que se pueden hacer con R
+
+* Procesamiento y visualización de datos espaciales 
+.center[
+&lt;img src="mapa_ggplot.jpeg" style="width: 650px; height: 450px;"&gt;
+]
+---
+# Cosas que se pueden hacer con R
+
+* Creación de aplicaciones interactivas 
+
+.center[
+&lt;img src="shiny.png" style="width: 650px; height: 450px;"&gt;
+]
+
+#### Imagen: Isabella Velásquez
+---
+# Cosas que se pueden hacer con R
+
+* Presentaciones, informes o artículos académicos
+
+    * Esta misma presentación está hecha en R usando la librería `xaringanthemer`
+.center[
+&lt;img src="xaringan.png" style="width: 700px; height: 385px;"&gt;
+]
+---
+# Descargar R y RStudio
+
+Para comenzar a utilizar R, es necesario descargar e instalar tanto el lenguaje de programación como un entorno de desarrollo integrado como RStudio.
+
+Descargar **R**:
+
+*   &lt;https://www.r-project.org/&gt;
+
+Descargar **RStudio**:
+
+*   &lt;https://www.rstudio.com/products/rstudio/download/&gt;
+
+Para instalar R / RStudio, vea este [**video**](https://www.youtube.com/watch?v=by5HyJX6H1I&amp;ab_channel=thatRnerd).
+
+---
+# Estructura de RStudio
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+RStudio es un entorno de desarrollo integrado que proporciona una interfaz gráfica de usuario para facilitar el uso de R. La interfaz de RStudio se divide en cuatro paneles principales:
+
+*   El panel de **.bg-purple_light[scripts]**: donde se escribe y ejecuta el código de R.
+
+*   El panel de **.bg-purple_light[consola]**: donde se muestra la salida del código que se ejecuta.
+
+*   El panel de **.bg-purple_light[entorno]**: donde se pueden ver los objetos cargados en R y sus atributos.
+
+*   El panel de **.bg-purple_light[archivos]**: donde se pueden ver los gráficos, archivos, etc.
+
+---
+# Estructura de RStudio
+
+.center[
+&lt;img src="estructura.png" style="width: 850px; height: 550px;"&gt;
+]
+
+---
+class: inverse, center, middle, heading
+
+# Consejos generales
+
+---
+# Antes de empezar, consejos generales
+&amp;nbsp;
+&amp;nbsp;
+
+* Empezar un script (`.R`)
+  * Limpiar el espacio
+  * Cargar paquetes que van a ser usados
+
+
+```r
+# Curso R - Sesión 1 ---------------------------------------------------------------
+
+rm(list = ls()) # limpiar el espacio
+
+library(tidyverse) # carga paquete tidyverse
+library(janitor) # carga paquete janitor
+```
+
+- Nombrar objetos
+  * 2Cs: Conciso y consistente
+  * Minúscula
+  * Estilos: `sexoEdad`, `sexo_edad` o `sexo.edad`    
+
+---
+# Antes de empezar, consejos generales
+&amp;nbsp;
+&amp;nbsp;
+
+- Comentar `#` [`Ctrl` + `Mayús` + `C`]
+  * Explicar el por qué
+  * Usar separadores para organizar el scrip [`Ctrl` + `Mayús` + `R`]
+
+
+```r
+# Librerías ---------------------------------------------------------------
+library(tidyverse)
+
+# Directorio de trabajo ---------------------------------------------------
+
+
+# Importar datos ----------------------------------------------------------
+```
+
+- Espacios  
+  * Usar espacios en torno a los operadores
+
+```r
+a&lt;-22+23 # mal
+a &lt;- 22 + 23 # bien
+```
+---
+# Help!
+ - Ayuda con las funciones:  
+
+
+```r
+help(mean)
+?mean
+```
+
+Recursos de ayuda a la programación en R:    
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+- [**Stackoverflow**](https://stackoverflow.com/)    
+
+- [**ChatGPT**](https://chat.openai.com/)
+
+- [**Cheatsheets**](https://www.rstudio.com/resources/cheatsheets/)    
+
+- [**Quick**](https://www.statmethods.net/)
+
+---
+class: inverse, center, middle, heading
+
+# Tipos de variables
+---
+## Tipos de variables
+.pull-left[
+
+- **Numérica continua**: son variables que pueden tomar cualquier valor dentro de un rango determinado.
+  - Ejemplo: Ingreso mensual de los hogares.
+
+- **Numérica discreta**: son variables que sólo pueden tomar valores enteros, es decir, números sin decimales.
+  - Ejemplo: Número de hijos en una familia.
+
+- **Categórica nominal**: son variables que describen una cualidad o categoría sin un orden o jerarquía específica.
+  - Ejemplo: Género (masculino/femenino).
+]
+
+.pull-right[
+
+- **Categórica ordinal**: son variables que describen una cualidad o categoría con un orden o jerarquía específica.
+  - Ejemplo: Nivel socioeconómico (bajo/medio/alto).
+
+- **Caracter**: son variables que representan cadenas de caracteres o textos.
+  - Ejemplo: Respuestas abiertas en una encuesta.
+]
+---
+class: inverse, center, middle, heading
+
+# Primeras operaciones con datos
+---
+# Primeros pasos en R: calculadora
+
+Usando R como una calculadora:
+
+
+```r
+2 * 3
+```
+
+```
+## [1] 6
+```
+
+En R, los **objetos** o **variables** se definen usando el operador `&lt;-`.
+
+
+```r
+x &lt;- 5
+y &lt;- x - 4
+```
+
+
+```r
+y
+```
+
+```
+## [1] 1
+```
+
+Todas las instrucciones en R en las que crees objetos, es decir, las instrucciones de asignación, tienen la misma estructura:
+
+*   nombre_objeto `&lt;-` valor
+
+---
+# Vectores y data.frame
+
+*   En R, un **vector** es una colección ordenada de elementos del mismo tipo. Estos pueden ser **numeric, integers, character, factors o logical**.
+
+
+```r
+numeric_vector &lt;- c(1,2,3,4,5)
+character_vector &lt;- c("a", "b","c","d","e")
+```
+
+*   La mayoría de las veces trabajaremos con muchos vectores a la vez, reunidos en un **data frame** o un **tibble**.
+
+
+```r
+my_df &lt;- data.frame(fruta = c("manzana", "pera", "uva"), 
+                    precio = c(2.99, 1.99, 3.99))
+```
+
+*   No todo en R puede almacenarse en un marco de datos, a veces trabajarás con **lists**.
+*   Funciones útiles para convertir vectores: `as.numeric()`, `as.character()`,`as.factor()`, etc. Trabajaremos con ellas más adelante.
+---
+# Seleccionando elementos de un data.frame
+
+**.bg-purple_light[¿Cómo seleccionar y filtrar datos?]**
+
+En el caso de los data.frame tenemos además a nuestro disposición una herramienta muy potente: la función `subset()`. 
+
+
+```r
+subset(my_df, subset = precio &gt; 2,
+       select = "fruta")
+```
+
+```
+##     fruta
+## 1 manzana
+## 3     uva
+```
+---
+class: inverse, center, middle, heading
+
+# Primeros ejercicios 📝
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 1**: añade debajo otra línea para definir una variable `b` con el valor `5`. Tras asignarles valores, multiplica los números en consola.
+
+
+```r
+a &lt;- 2
+```
+
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 1**: añade debajo otra línea para definir una variable `b` con el valor `5`. Tras asignarles valores, multiplica los números en consola.
+
+
+```r
+a &lt;- 2
+```
+
+- Solución ej. 1:
+
+
+```r
+# Para poner comentarios en el código se usa #
+
+# Definición de variables
+a &lt;- 2
+b &lt;- 5
+
+# Multiplicación
+a * b
+```
+
+```
+## [1] 10
+```
+
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 2**: modifica el código inferior para definir dos variables `c` y `d`, con valores 3 y -1, y calcular la división `c/d`
+
+
+```r
+c &lt;- # deberías asignarle el valor 3
+d &lt;- # deberías asignarle el valor -1
+```
+
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 2**: modifica el código inferior para definir dos variables `c` y `d`, con valores 3 y -1, y calcular la división `c/d`
+
+
+```r
+c &lt;- # deberías asignarle el valor 3
+d &lt;- # deberías asignarle el valor -1
+```
+
+* Solución ej. 2:
+
+
+```r
+# Definición de variables
+c &lt;- 3
+d &lt;- -1
+# Operación (división)
+c/d
+```
+
+```
+## [1] -3
+```
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 3**: en este ejercicio, tenemos dos vectores: primer_vector, que contiene valores numéricos del 1 al 5, y segundo_vector, que contiene valores de caracteres "a" a "e". Utilizando la función `data.frame()`, creamos un nuevo dataframe llamado nuevo_df .
+
+
+```r
+primer_vector &lt;- c(1,2,3,4,5)
+segundo_vector &lt;- c("a","b","c","d","e")
+```
+
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 3**: en este ejercicio, tenemos dos vectores: primer_vector, que contiene valores numéricos del 1 al 5, y segundo_vector, que contiene valores de caracteres "a" a "e". Utilizando la función `data.frame()`, creamos un nuevo dataframe llamado nuevo_df .
+
+
+```r
+primer_vector &lt;- c(1,2,3,4,5)
+segundo_vector &lt;- c("a","b","c","d","e")
+```
+
+- Solución ej. 3:
+
+
+```r
+nuevo_df &lt;- data.frame(primer_vector,segundo_vector)
+nuevo_df
+```
+
+```
+##   primer_vector segundo_vector
+## 1             1              a
+## 2             2              b
+## 3             3              c
+## 4             4              d
+## 5             5              e
+```
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 4**: a partir del data.frame **.bg-purple_light[nuevo_df]**, selecciona las filas donde los valores en la columna primer_vector sean mayores que 3 utilizando la función `subset()` y asígnalo a un objeto llamado **.bg-purple_light[subset_df]**.
+
+---
+# Primeros ejercicios
+
+* 📝 **Ejercicio 4**: a partir del data.frame **.bg-purple_light[nuevo_df]**, selecciona las filas donde los valores en la columna primer_vector sean mayores que 3 utilizando la función `subset()` y asígnalo a un objeto llamado **.bg-purple_light[subset_df]**.
+
+- Solución ej. 4:
+
+
+```r
+subset_df &lt;- subset(nuevo_df, primer_vector &gt; 3)
+subset_df
+```
+
+```
+##   primer_vector segundo_vector
+## 4             4              d
+## 5             5              e
+```
+---
+class: inverse, center, middle, heading
+
+# Paquetes, librerías y datos
+
+---
+# Paquetes y librerías para importar datos
+&amp;nbsp;
+
+.pull-left[
+
+- **Paquete: haven**
+    - Archivos: Stata, SPSS, SAS
+    - Funciones:
+        * `read_dta("tuarchivo.dta")`
+        * `read_sav()`
+        * `read_sas()`
+
+
+- **Paquete: readr**
+    - Archivos: csv
+    - Funciones:
+        * `read_csv("tuarchivo.csv")`
+]
+
+.pull-right[
+
+- **Paquete: readxl**
+    - Archivos: xls / xlsx
+    - Funciones:
+        * `read_xls("tuarchivo.xls")`
+        * `read_xlsx("tuarchivo.xlsx")`
+]       
+---
+# Paquetes y librerías para exportar datos
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+Algunas funciones importantes en R para exportar datos:
+
+* `write_excel()` se utiliza para exportar datos a un archivo de Excel (.xlsx).
+* `write_sav()` se utiliza para exportar datos a un archivo de formato SPSS (.sav).
+* `write_dta()` se utiliza para exportar datos a un archivo de formato Stata (.dta).
+
+---
+# Paquetes y librerías
+&amp;nbsp;
+&amp;nbsp;
+
+Primero, instalar paquetes
+
+  *  Un paquete en R es una colección de funciones, datos y documentación que se pueden usar para realizar tareas específicas.
+
+
+```r
+# install.packages("tidyverse")
+```
+
+Segundo, cargar librerías
+
+  * Las librerías son directorios en tu sistema de archivos donde se almacenan los paquetes instalados.
+
+
+```r
+library(tidyverse)
+```
+
+---
+# Directorio de trabajo e importar datos
+
+Antes de cargar los datos debemos de definir nuestro directorio de trabajo. Esto es, debemos indicarle a R cuál es la ubicación en tu ordenador donde se guardan y cargan los archivos de datos y scripts.
+
+
+```r
+#setwd("~/Desktop/Intro-R/Dia1")
+```
+
+Para saber el directorio de trabajo actual en R, puedes utilizar la función `getwd()`. Por ejemplo:
+
+
+```r
+getwd()
+```
+
+```
+## [1] "/Users/manuelmejiasleiva/Desktop/Intro-R/Dia1"
+```
+
+Una vez definido el directorio de trabajo, procedemos a importar los datos a R:
+
+
+```r
+data &lt;- read_csv("GSOEP9402.csv")
+```
+---
+# Cambiando la estructura del data frame
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+Los comandos más comunes que pueden ayudar a modificar el formato de las columnas:
+
+* `as.numeric()` cambiará su formato a numérico.
+
+* `as.character()` cambiará su formato a carácter.
+
+* `as.factor()` cambiará los datos como factores.
+
+
+```r
+data$school &lt;- as.factor(data$school)
+data$income &lt;- as.numeric(data$income)
+```
+
+---
+# Conoce tus datos 🔎️ 
+
+`head()` muestra las 6 primeras filas de sus datos.
+
+Para ver más (o menos), puedes hacer `head(data, n)`.
+
+
+```r
+head(data)
+```
+
+```
+## # A tibble: 6 × 13
+##    ...1 school     birthyear gender  kids parity  income  size state  marital 
+##   &lt;dbl&gt; &lt;fct&gt;          &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   
+## 1     1 Gymnasium       1981 female     2      2  35160.     4 Berlin married 
+## 2     2 Gymnasium       1981 female     2      2  65748.     3 Berlin married 
+## 3     3 Gymnasium       1980 female     3      3 120962.     3 Berlin married 
+## 4     4 Gymnasium       1984 female     1      1  60101.     3 Berlin married 
+## 5     5 Realschule      1982 male       4      4  34829.     4 Berlin divorced
+## 6     6 Realschule      1980 female     3      1  42584.     5 Berlin married 
+## # ℹ 3 more variables: meducation &lt;dbl&gt;, memployment &lt;chr&gt;, year &lt;dbl&gt;
+```
+
+---
+# Conoce tus datos 🔎️ 
+
+`str()` te da una visión general de los tipos de datos.
+
+
+```r
+str(data)
+```
+
+```
+## spc_tbl_ [675 × 13] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ ...1       : num [1:675] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ school     : Factor w/ 3 levels "Gymnasium","Hauptschule",..: 1 1 1 1 3 3 1 1 1 2 ...
+##  $ birthyear  : num [1:675] 1981 1981 1980 1984 1982 ...
+##  $ gender     : chr [1:675] "female" "female" "female" "female" ...
+##  $ kids       : num [1:675] 2 2 3 1 4 3 3 1 4 2 ...
+##  $ parity     : num [1:675] 2 2 3 1 4 1 3 1 4 2 ...
+##  $ income     : num [1:675] 35160 65748 120962 60101 34829 ...
+##  $ size       : num [1:675] 4 3 3 3 4 5 3 3 5 4 ...
+##  $ state      : chr [1:675] "Berlin" "Berlin" "Berlin" "Berlin" ...
+##  $ marital    : chr [1:675] "married" "married" "married" "married" ...
+##  $ meducation : num [1:675] 14.5 10.5 12 10.5 10 15 15 13 15 9 ...
+##  $ memployment: chr [1:675] "none" "parttime" "parttime" "parttime" ...
+##  $ year       : num [1:675] 1995 1995 1994 1998 1996 ...
+##  - attr(*, "spec")=
+##   .. cols(
+##   ..   ...1 = col_double(),
+##   ..   school = col_character(),
+##   ..   birthyear = col_double(),
+##   ..   gender = col_character(),
+##   ..   kids = col_double(),
+##   ..   parity = col_double(),
+##   ..   income = col_double(),
+##   ..   size = col_double(),
+##   ..   state = col_character(),
+##   ..   marital = col_character(),
+##   ..   meducation = col_double(),
+##   ..   memployment = col_character(),
+##   ..   year = col_double()
+##   .. )
+##  - attr(*, "problems")=&lt;externalptr&gt;
+```
+---
+# Conoce tus datos 🔎️ 
+
+`glimpse()` es útil para obtener una vista previa rápida de la estructura de un dataframe y el tipo de datos de sus variables.
+
+
+```r
+glimpse(data)
+```
+
+```
+## Rows: 675
+## Columns: 13
+## $ ...1        &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,…
+## $ school      &lt;fct&gt; Gymnasium, Gymnasium, Gymnasium, Gymnasium, Realschule, Re…
+## $ birthyear   &lt;dbl&gt; 1981, 1981, 1980, 1984, 1982, 1980, 1986, 1986, 1981, 1983…
+## $ gender      &lt;chr&gt; "female", "female", "female", "female", "male", "female", …
+## $ kids        &lt;dbl&gt; 2, 2, 3, 1, 4, 3, 3, 1, 4, 2, 2, 2, 5, 5, 5, 2, 1, 2, 4, 4…
+## $ parity      &lt;dbl&gt; 2, 2, 3, 1, 4, 1, 3, 1, 4, 2, 1, 1, 3, 2, 1, 2, 1, 2, 1, 3…
+## $ income      &lt;dbl&gt; 35160.11, 65748.35, 120962.36, 60100.57, 34828.95, 42584.0…
+## $ size        &lt;dbl&gt; 4, 3, 3, 3, 4, 5, 3, 3, 5, 4, 4, 4, 7, 7, 7, 4, 3, 4, 6, 4…
+## $ state       &lt;chr&gt; "Berlin", "Berlin", "Berlin", "Berlin", "Berlin", "Berlin"…
+## $ marital     &lt;chr&gt; "married", "married", "married", "married", "divorced", "m…
+## $ meducation  &lt;dbl&gt; 14.5, 10.5, 12.0, 10.5, 10.0, 15.0, 15.0, 13.0, 15.0, 9.0,…
+## $ memployment &lt;chr&gt; "none", "parttime", "parttime", "parttime", "fulltime", "p…
+## $ year        &lt;dbl&gt; 1995, 1995, 1994, 1998, 1996, 1994, 2000, 2000, 1995, 1997…
+```
+---
+# Conoce tus datos 🔎️ 
+
+* La función `summary()` se utiliza para obtener un resumen estadístico de un objeto, como un vector, una matriz o un marco de datos. El resumen proporciona información como el mínimo, el primer cuartil, la mediana, el tercer cuartil y el máximo de los datos, así como el número de valores faltantes.
+
+
+```r
+summary(data)
+```
+
+```
+##       ...1               school      birthyear       gender         
+##  Min.   :  1.0   Gymnasium  :277   Min.   :1980   Length:675        
+##  1st Qu.:169.5   Hauptschule:199   1st Qu.:1982   Class :character  
+##  Median :338.0   Realschule :199   Median :1984   Mode  :character  
+##  Mean   :338.0                     Mean   :1984                     
+##  3rd Qu.:506.5                     3rd Qu.:1986                     
+##  Max.   :675.0                     Max.   :1988                     
+##       kids          parity         income            size      
+##  Min.   :1.00   Min.   :1.00   Min.   :  1248   Min.   :2.000  
+##  1st Qu.:2.00   1st Qu.:1.00   1st Qu.: 49229   1st Qu.:4.000  
+##  Median :2.00   Median :2.00   Median : 66555   Median :4.000  
+##  Mean   :2.51   Mean   :1.76   Mean   : 71311   Mean   :4.259  
+##  3rd Qu.:3.00   3rd Qu.:2.00   3rd Qu.: 86646   3rd Qu.:5.000  
+##  Max.   :6.00   Max.   :5.00   Max.   :258341   Max.   :8.000  
+##     state             marital            meducation    memployment       
+##  Length:675         Length:675         Min.   : 7.00   Length:675        
+##  Class :character   Class :character   1st Qu.:10.50   Class :character  
+##  Mode  :character   Mode  :character   Median :11.00   Mode  :character  
+##                                        Mean   :11.44                     
+##                                        3rd Qu.:12.00                     
+##                                        Max.   :18.00                     
+##       year     
+##  Min.   :1994  
+##  1st Qu.:1996  
+##  Median :1998  
+##  Mean   :1998  
+##  3rd Qu.:2000  
+##  Max.   :2002
+```
+---
+# Conoce tus datos 🔎️ 
+
+`summary()` le proporciona estadísticas resumidas de sus datos. Puede aplicarlo a todo el data frame o **a una sola variable**.
+
+
+```r
+summary(data$income)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1248   49229   66555   71311   86646  258341
+```
+
+
+```r
+summary(data$meducation)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    7.00   10.50   11.00   11.44   12.00   18.00
+```
+
+&amp;nbsp;
+
+* El símbolo del dólar (`$`) se utiliza en la programación en R para **.bg-purple_light[seleccionar una columna de un data frame]**.
+
+---
+# Conoce tus datos 🔎️ 
+
+* Contar los valores perdidos en cada columna
+
+
+```r
+colSums(is.na(data))
+```
+
+```
+##        ...1      school   birthyear      gender        kids      parity 
+##           0           0           0           0           0           0 
+##      income        size       state     marital  meducation memployment 
+##           0           0           0           0           0           0 
+##        year 
+##           0
+```
+
+---
+# Conoce tus datos 🔎️ 
+
+`table()` cuenta el número de veces que aparece cada categoría y muestra los resultados en una tabla.
+
+
+```r
+table(data$school)
+```
+
+```
+## 
+##   Gymnasium Hauptschule  Realschule 
+##         277         199         199
+```
+
+También es posible crear tablas que incluyan dos o más variables categóricas:
+
+
+```r
+table(data$school,data$marital)
+```
+
+```
+##              
+##               divorced married separated single widowed
+##   Gymnasium         11     245        13      2       6
+##   Hauptschule       23     164         7      4       1
+##   Realschule        25     157         9      5       3
+```
+
+---
+# Conoce tus datos 🔎️ 
+
+
+```r
+hist(data$income)
+```
+
+&lt;img src="Sesion1_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Conoce tus datos 🔎️ 
+
+
+```r
+boxplot(income ~ school, data = data,
+        main = "Boxplot: itinerario educativo según ingresos del hogar")
+```
+
+&lt;img src="Sesion1_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Conoce tus datos 🔎️ 
+
+Calcular la media de ingresos para el conjunto de la muestra:
+
+
+```r
+mean(data$income)
+```
+
+```
+## [1] 71310.96
+```
+
+Mediana de ingresos para el conjunto de la muestra:
+
+
+```r
+median(data$income)
+```
+
+```
+## [1] 66555.03
+```
+---
+# Conoce tus datos 🔎️ 
+
+Encontrar el valor de renta del hogar más bajo del conjunto de datos: 
+
+```r
+min(data$income)
+```
+
+```
+## [1] 1247.59
+```
+
+Encontrar el valor de renta del hogar más alto del conjunto de datos: 
+
+```r
+max(data$income)
+```
+
+```
+## [1] 258341.4
+```
+
+---
+# Conoce tus datos 🔎️ 
+
+Para calcular la media por grupos se puede utilizar la función `aggregate`. Por ejemplo, vamos a calcular la media de años de educación de las madres agrupada por el itinerario educativo seguido por los hijos/as:
+
+
+```r
+aggregate(meducation ~ school, data = data, mean)
+```
+
+```
+##        school meducation
+## 1   Gymnasium   12.55415
+## 2 Hauptschule   10.33668
+## 3  Realschule   11.00251
+```
+
+---
+# Conoce tus datos 🔎️ 
+
+- Para analizar variables categóricas:
+
+
+```r
+library(janitor)
+
+tabyl(data$school)
+```
+
+```
+##  data$school   n   percent
+##    Gymnasium 277 0.4103704
+##  Hauptschule 199 0.2948148
+##   Realschule 199 0.2948148
+```
+---
+# Conoce tus datos 🔎️ 
+
+
+```r
+data %&gt;% 
+  tabyl(school,gender)
+```
+
+```
+##       school female male
+##    Gymnasium    151  126
+##  Hauptschule     96  103
+##   Realschule    101   98
+```
+
+- Aquí hay un nuevo signo extraño: `%&gt;%`. Esta cosa se llama **"pipe"**. Puedes leerlo como decirle a R: **"primero haz esto y luego haz aquello"**. Así, primero le dices a R que use el objeto "data" y luego (%&gt;%) le dices a R que tome ese objeto y realice la operación tabyl() con ese objeto.
+
+- También podéis encontrar este signo `|&gt;` que es la última actualización del **pipe** en R.
+
+---
+# Conoce tus datos 🔎️ 
+
+
+```r
+data %&gt;% 
+  tabyl(school,gender) %&gt;%
+* adorn_percentages("row")
+```
+
+```
+##       school    female      male
+##    Gymnasium 0.5451264 0.4548736
+##  Hauptschule 0.4824121 0.5175879
+##   Realschule 0.5075377 0.4924623
+```
+---
+# Conoce tus datos 🔎️ 
+
+
+```r
+data %&gt;% 
+  tabyl(school,gender) %&gt;%
+  adorn_percentages("row") %&gt;% 
+* adorn_pct_formatting(digits = 1)
+```
+
+```
+##       school female  male
+##    Gymnasium  54.5% 45.5%
+##  Hauptschule  48.2% 51.8%
+##   Realschule  50.8% 49.2%
+```
+
+---
+# Guardar script 💾
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+* File &gt;&gt; Save As...
+
+* Elige una ubicación en tu ordenador donde desees guardar el script.
+
+* Asigna un nombre descriptivo al archivo. Por convención, los scripts de R suelen tener una extensión .bg-yellow[.R] al final del nombre del archivo (por ejemplo, .bg-orange[mi_script.R]).
+
+---
+class: inverse, center, middle, heading
+# Recursos 📚
+---
+# Recursos para aprender &lt;img src="r-project.svg" alt="Logo de R Project" width="50" height="50"&gt;
+&amp;nbsp;
+&amp;nbsp;
+&amp;nbsp;
+
+* Libros: [**R for Data Science**](https://r4ds.had.co.nz/)
+
+* Cursos web: [**DataCamp**](https://www.datacamp.com/)
+
+* Twitter: [**RLadiesGlobal**](https://twitter.com/RLadiesGlobal), [**hadleywickham**](https://twitter.com/hadleywickham), [**dataandme**](https://twitter.com/dataandme),
+[**andrewheiss**](https://twitter.com/andrewheiss)
+
+* Rbloggers: : [**https://www.r-bloggers.com/**](https://www.r-bloggers.com)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,181 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage[]{natbib}
+\bibliographystyle{plainnat}
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Introducción al análisis de datos con R},
+  pdfauthor={Ejercicios - Sesión 1},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Introducción al análisis de datos con R}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Conceptos básicos de R y RStudio}
+\author{Ejercicios - Sesión 1}
+\date{5 - 9 junio de 2023}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introducciuxf3n}{%
+\subsection{1. Introducción}\label{introducciuxf3n}}
+
+En este ejercicio vamos a utilizar datos transversales de 675 niños de
+14 años nacidos entre 1980 y 1988. La muestra procede del Panel
+Socioeconómico Alemán (GSOEP) de los años 1994 a 2002 para investigar
+los determinantes de la elección de centro de enseñanza secundaria. En
+el sistema educativo alemán, los niveles de Gymnasium, Hauptschule y
+Realschule corresponden a diferentes tipos de escuelas secundarias con
+enfoques educativos y académicos distintos:
+
+\begin{itemize}
+\item
+  La Hauptschule es una escuela secundaria de nivel básico y se
+  considera el nivel educativo más bajo en el sistema alemán.
+\item
+  La Realschule es una escuela secundaria de nivel intermedio.
+\item
+  El Gymnasium es una escuela secundaria de nivel más alto y
+  académicamente orientada (los estudiantes se preparan para ingresar a
+  la universidad).
+\end{itemize}
+
+La documentación sobre las variables que contiene esta base de datos se
+encuentra disponible en el siguiente enlace:
+\url{https://vincentarelbundock.github.io/Rdatasets/doc/AER/GSOEP9402.html}
+
+\hypertarget{primeros-pasos}{%
+\subsection{2. Primeros pasos}\label{primeros-pasos}}
+
+En los ejercicios de la primera sesión vamos a trabajar sobre cómo
+realizar un primer acercamiento exploratorio a los datos con R. Antes de
+empezar:
+
+\begin{itemize}
+\item
+  2.1. Abre el script \texttt{Ejercicio\_sesion1} y limpia el espacio de
+  datos ejecutando \texttt{rm(list\ =\ ls())}. Este comando eliminará
+  todos los datos (objetos) del espacio de trabajo, evitando posibles
+  confusiones.
+\item
+  2.2. Carga los paquetes que necesitas para realizar el ejercicio,
+  ejecutando las líneas de \texttt{library()}. En caso de que alguno de
+  ellos no esté instalado, instalalo utilizando
+  \texttt{install.packages("package")}. Fudamentalmente, en este
+  ejercicio se utilizará la librería \textbf{tidyverse} y
+  \textbf{janitor}.
+\item
+  2.3. Establece el directorio de trabajo donde se encuentran los datos.
+  Puedes hacerlo usando \texttt{setwd()} o desde \texttt{Files}.
+\item
+  2.4. Carga el archivo de datos en formato CSV utilizando
+  \texttt{read\_csv()} y asígnalo a un objeto llamado \textbf{data}.
+\end{itemize}
+
+\hypertarget{observando-la-estructura-de-los-datos}{%
+\subsection{3. Observando la estructura de los
+datos}\label{observando-la-estructura-de-los-datos}}
+
+Explora la base de datos que acabas de cargar:
+
+\begin{itemize}
+\tightlist
+\item
+  3.1. Muestra las primeras 6 filas utilizando \texttt{head()}.
+\item
+  3.2. Explora la estructura de los datos utilizando \texttt{glimpse()}.
+  ¿Cuántas filas tiene? ¿Cuántas columnas tiene? ¿De qué tipo son las
+  variables?
+\item
+  3.3. Verifica si existen valores perdidos en alguna columna utilizando
+  \texttt{colSums(is.na())}.
+\end{itemize}
+
+\hypertarget{anuxe1lisis-exploratorio-de-los-datos}{%
+\subsection{4. Análisis exploratorio de los
+datos}\label{anuxe1lisis-exploratorio-de-los-datos}}
+
+\begin{itemize}
+\tightlist
+\item
+  4.1. Calcula la media de años de educación que tienen las madres
+  utilizando \texttt{mean()}.
+\item
+  4.2. Calcula la mediana de los ingresos del hogar utilizando
+  \texttt{median()}.
+\item
+  4.3. Calcula la media de años de educación de la madre para cada
+  itinerario educativo cursado por los alumnos. Utiliza
+  \texttt{aggregate()}.
+\item
+  4.4. Calcula la media de ingresos del hogar para cada itinerario
+  educativo cursado por los alumnos. Utiliza \texttt{aggregate()}.
+\item
+  4.5. Realiza un análisis para mostrar, en términos porcentuales, si la
+  elección de los itinerarios educativos (school) difiere según el
+  estado civil de la madre (marital). Utiliza \texttt{tabyl()}.
+\end{itemize}
+
+\end{document}

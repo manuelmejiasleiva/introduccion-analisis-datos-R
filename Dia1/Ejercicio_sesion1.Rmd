@@ -1,0 +1,52 @@
+---
+title: "Introducción al análisis de datos con R"
+subtitle: "Conceptos básicos de R y RStudio"
+author:  "Ejercicios - Sesión 1"
+date: "5 - 9 junio de 2023"
+output:
+  pdf_document:
+    citation_package: natbib
+    keep_tex: true
+    fig_caption: true
+    latex_engine: pdflatex
+---
+
+## 1. Introducción
+
+En este ejercicio vamos a utilizar datos transversales de 675 niños de 14 años nacidos entre 1980 y 1988. La muestra procede del Panel Socioeconómico Alemán (GSOEP) de los años 1994 a 2002 para investigar los determinantes de la elección de centro de enseñanza secundaria. En el sistema educativo alemán, los niveles de Gymnasium, Hauptschule y Realschule corresponden a diferentes tipos de escuelas secundarias con enfoques educativos y académicos distintos:
+
+- La Hauptschule es una escuela secundaria de nivel básico y se considera el nivel educativo más bajo en el sistema alemán.
+
+- La Realschule es una escuela secundaria de nivel intermedio.
+
+- El Gymnasium es una escuela secundaria de nivel más alto y académicamente orientada (los estudiantes se preparan para ingresar a la universidad).
+
+La documentación sobre las variables que contiene esta base de datos se encuentra disponible en el siguiente enlace: https://vincentarelbundock.github.io/Rdatasets/doc/AER/GSOEP9402.html 
+
+## 2. Primeros pasos 
+
+En los ejercicios de la primera sesión vamos a trabajar sobre cómo realizar un primer acercamiento exploratorio a los datos con R. Antes de empezar:
+
+* 2.1. Abre el script `Ejercicio_sesion1` y limpia el espacio de datos ejecutando `rm(list = ls())`. Este comando eliminará todos los datos (objetos) del espacio de trabajo, evitando posibles confusiones.
+
+* 2.2. Carga los paquetes que necesitas para realizar el ejercicio, ejecutando las líneas de `library()`. En caso de que alguno de ellos no esté instalado, instalalo utilizando `install.packages("package")`. Fudamentalmente, en este ejercicio se utilizará la librería **tidyverse** y **janitor**.
+
+* 2.3. Establece el directorio de trabajo donde se encuentran los datos. Puedes hacerlo usando `setwd()` o desde `Files`.
+
+* 2.4. Carga el archivo de datos en formato CSV utilizando `read_csv()` y asígnalo a un objeto llamado **data**.
+
+## 3. Observando la estructura de los datos
+
+Explora la base de datos que acabas de cargar:
+
+* 3.1. Muestra las primeras 6 filas utilizando `head()`.
+* 3.2. Explora la estructura de los datos utilizando `glimpse()`. ¿Cuántas filas tiene? ¿Cuántas columnas tiene? ¿De qué tipo son las variables?
+* 3.3. Verifica si existen valores perdidos en alguna columna utilizando `colSums(is.na())`.
+  
+## 4. Análisis exploratorio de los datos
+
+* 4.1. Calcula la media de años de educación que tienen las madres utilizando `mean()`.
+* 4.2. Calcula la mediana de los ingresos del hogar utilizando `median()`.
+* 4.3. Calcula la media de años de educación de la madre para cada itinerario educativo cursado por los alumnos. Utiliza `aggregate()`.
+* 4.4. Calcula la media de ingresos del hogar para cada itinerario educativo cursado por los alumnos. Utiliza `aggregate()`.
+* 4.5. Realiza un análisis para mostrar, en términos porcentuales, si la elección de los itinerarios educativos (school) difiere según el estado civil de la madre (marital). Utiliza `tabyl()`.
