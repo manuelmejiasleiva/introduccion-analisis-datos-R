@@ -1,0 +1,173 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage[]{natbib}
+\bibliographystyle{plainnat}
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Introducción al análisis de datos con R},
+  pdfauthor={Ejercicios - Sesión 3},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Introducción al análisis de datos con R}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Introducción a la visualización de datos y flujos de trabajo}
+\author{Ejercicios - Sesión 3}
+\date{5 - 9 junio de 2023}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introducciuxf3n}{%
+\subsection{Introducción}\label{introducciuxf3n}}
+
+En este ejercicio vamos a trabajar con datos procedentes del proyecto
+``Atlas de Oportunidades''. Este proyecto constituye el primer análisis
+de movilidad social en España basado en datos de rentas de padres e
+hijos, proporcionados por la Agencia Estatal de Administración
+Tributaria.
+
+El objetivo de este ejercicio es visualizar la relación entre la
+influencia de la renta de los padres y la renta futura de los hijos,
+teniendo en cuenta diferentes características como el sexo y el
+territorio de residencia.
+
+\hypertarget{primeros-pasos}{%
+\subsection{Primeros pasos}\label{primeros-pasos}}
+
+\begin{itemize}
+\tightlist
+\item
+  Carga la base de datos ``tabla\_nacional.csv'' ubicada en la carpeta
+  ``datatset\_atlas\_oportunidad'' y almacénala en un objeto llamado
+  ``df''.
+\end{itemize}
+
+\hypertarget{representaciuxf3n-gruxe1fico-de-los-datos-dplyr-ggplot}{%
+\subsection{\texorpdfstring{Representación gráfico de los datos:
+\texttt{dplyr} +
+\texttt{ggplot}}{Representación gráfico de los datos: dplyr + ggplot}}\label{representaciuxf3n-gruxe1fico-de-los-datos-dplyr-ggplot}}
+
+\begin{itemize}
+\item
+  Filtra la base de datos para obtener un data frame llamado ``dftotal''
+  que cumpla con los siguientes filtros: sexo = ``total'', tipo\_renta =
+  ``individual'' y promedio = ``mediana''. Una vez filtrada la base de
+  datos, crea un gráfico de dispersión de puntos utilizando
+  \texttt{geom\_point()}. En el eje X, representa la variable
+  ``centil\_padres'', y en el eje Y, la variable
+  ``centil\_hijo\_loess''.
+\item
+  Sustituye los puntos por una línea utilizando la función
+  \texttt{geom\_line()}.
+\item
+  En una sociedad donde la renta de los padres no influye en la renta
+  futura de los hijos, la representación gráfica sería una línea recta
+  en el valor 50 del eje Y. Utilizando \texttt{geom\_hline()} , añade
+  una línea recta que intersecte el gráfico en el percentil 50 del eje
+  Y. Además, cambia el color de la línea usando
+  \texttt{color="\#6D92CE"} y el tamaño usando \texttt{size=1}.
+\item
+  Personaliza el gráfico agregando un título sugerente y etiquetando las
+  variables correspondientes en los ejes X e Y. Además, incluye la
+  fuente de los datos utilizando la función \texttt{labs()}.
+\item
+  A continuación, vamos a representar la desigualdad de oportunidades
+  para hombres y mujeres. Crea un nuevo data frame llamado ``df\_sexo''
+  donde filtres las siguientes columnas por las siguientes categorías:
+  tipo\_renta = ``individual'' y promedio = ``mediana''. Una vez que
+  tengas los datos preparados, crea un gráfico de líneas utilizando
+  \texttt{geom\_line()} e incluye los valores para la variable ``sexo''.
+  Utiliza diferentes colores para cada categoría.
+\item
+  Cambia el color de las líneas de tendencia. Utiliza color naranja para
+  los hombres, color morado para las mujeres y color negro para el
+  total. Puedes hacerlo mediante la función
+  \texttt{scale\_color\_manual()}.
+\item
+  Modifica el eje Y para que vaya desde el valor 20 hasta el valor 100.
+\item
+  Ahora, vamos a analizar si la desigualdad de oportunidades difiere
+  según la Comunidad Autónoma de residencia.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Primero, carga el data frame ``tabla\_ccaa'' y almacénalo en un
+    nuevo objeto llamado ``dfccaa''.
+  \item
+    Segundo, crea un gráfico donde representes la relación entre la
+    renta de padres e hijos en cada Comunidad Autónoma (utilizando
+    \texttt{facet\_wrap()}) para hombres y mujeres.
+  \item
+    Tercero, personaliza el gráfico con el fin de mejorar su
+    comprensión. Por ejemplo, cambia el color para hombres (naranja) y
+    mujeres (morado), cambia el tema a \texttt{theme\_bw()}, y añade
+    títulos y fuente.
+  \end{itemize}
+\item
+  Guarda el gráfico usando la función \texttt{ggsave()}.
+\end{itemize}
+
+\end{document}
