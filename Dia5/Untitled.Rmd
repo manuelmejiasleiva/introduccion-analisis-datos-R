@@ -1,0 +1,26 @@
+---
+title: "Nuestro primer Rmarkdown"
+author: "Manuel Mejías"
+date: "2023-06-09"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+Mi primer ***rmarkdown***
+
+```{r message=FALSE, eval=FALSE}
+x <- 5
+x
+```
+
+| Col1   | Col2 | Col3 |
+|--------|------|------|
+| jgflik |      |      |
+| lknkj  |      |      |
+|        |      |      |
+
+# Apartado 1
+
+## 1.1.
